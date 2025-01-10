@@ -5,7 +5,6 @@ import pytest
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.image import DockerImage
 from testcontainers.core.network import Network
-from testcontainers.core.waiting_utils import wait_for_logs
 from testcontainers.redis import RedisContainer
 
 # These are the image names to be used in the tests
@@ -27,21 +26,13 @@ def images(request):
         return DockerImage(path=path, tag=tag).build()
 
     # Build the base images as they'd be deployed in production
-    with ThreadPoolExecutor() as executor:
-        futures = [
-            executor.submit(create_docker_image, "../order-processor", processor_base),
-            executor.submit(create_docker_image, "../order-publisher", publisher_base),
-        ]
-        wait(futures)
+    create_docker_image("./order-processor", processor_base)
+    create_docker_image("./order-publisher", publisher_base)
 
     # This uses the base images and extends them to include test-specific dependencies. In this case... just Dapr
     # but it could also include other things such as az cli or test volumes for sample payloads
-    with ThreadPoolExecutor() as executor:
-        futures = [
-            executor.submit(create_docker_image, "docker-images/order-processor", processor),
-            executor.submit(create_docker_image, "docker-images/order-publisher", publisher),
-        ]
-        wait(futures)
+    create_docker_image("docker-images/order-processor", processor)
+    create_docker_image("docker-images/order-publisher", publisher)
 
 
 @pytest.fixture
