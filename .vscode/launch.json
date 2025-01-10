@@ -1,0 +1,29 @@
+{
+    "configurations": [
+      {
+        "type": "debugpy",
+        "request": "launch",
+        "name": "Order publisher",
+        "program": "${workspaceFolder}/order-publisher/app.py",
+        "preLaunchTask": "order-publisher-dapr-up",
+        "postDebugTask": "order-publisher-dapr-down"
+      },
+      {
+        "type": "debugpy",
+        "request": "launch",
+        "name": "Order processor",
+        "program": "${workspaceFolder}/order-processor/app.py",
+        "preLaunchTask": "order-processor-dapr-up",
+        "postDebugTask": "order-processor-dapr-down"
+      }
+    ],
+    "compounds": [
+      {
+        "name": "Order (all)",
+        "configurations": [
+          "Order processor",
+          "Order publisher"
+        ]
+      }
+    ],
+  }

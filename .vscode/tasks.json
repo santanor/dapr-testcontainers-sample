@@ -1,0 +1,46 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "order-publisher-dapr-up",
+        "type": "daprd",
+        "appId": "order-publisher",
+        "enableMetrics": false,
+        "enableHealthCheck": true,
+        "appHealthProbeInterval": 1,
+        "appHealthProbeTimeout": 1000,
+        "appHealthThreshold": 10,
+        "resourcesPaths": [
+          "./dapr-components"
+        ]
+      },
+      {
+        "label": "order-publisher-dapr-down",
+        "type": "daprd-down",
+        "appId": "order-publisher"
+      },
+      {
+        "label": "order-processor-dapr-up",
+        "type": "daprd",
+        "appId": "order-processor",
+        "appProtocol": "grpc",
+        "appPort": 50051,
+        "grpcPort": 50002, //these ports have to be different then the default, since we are running 2 sidecars
+        "httpPort": 3501,
+        "enableMetrics": false,
+        "enableHealthCheck": true,
+        "appHealthProbeInterval": 1,
+        "appHealthProbeTimeout": 1000,
+        "appHealthThreshold": 10,
+        "resourcesPaths": [
+          "./dapr-components"
+        ]
+      },
+      {
+        "label": "order-processor-dapr-down",
+        "type": "daprd-down",
+        "appId": "order-processor"
+      }
+    ]
+  }
+  

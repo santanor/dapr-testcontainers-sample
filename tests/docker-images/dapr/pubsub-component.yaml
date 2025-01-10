@@ -1,0 +1,20 @@
+---
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: orders-pubsub
+  namespace: ${NAMESPACE}
+spec:
+  type: pubsub.redis
+  version: v1
+  # Variables documented here https://docs.dapr.io/reference/components-reference/supported-pubsub/setup-redis-pubsub/
+  metadata:
+    - name: redisHost
+      # The host needs to include the namespace of the redis component
+      # value: redis-master.{NAMESPACE}.svc.cluster.local:6379
+      value: 127.0.0.1:6379
+    - name: processingTimeout
+      # The amount time that a message must be pending before attempting to redeliver
+      # value: "0" disables the redelivery, as the contextualizer-resiliency's retry policy takes care of it
+      value: "0"
+      
