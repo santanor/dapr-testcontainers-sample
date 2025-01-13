@@ -13,6 +13,6 @@ RUN dapr init --slim
 
 # Install your app
 WORKDIR /components
-COPY redis-testcontainer-pubsub.yaml .
+COPY pubsub-component.yaml .
 
 EXPOSE 3500
