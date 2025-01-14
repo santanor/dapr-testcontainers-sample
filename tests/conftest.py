@@ -1,6 +1,3 @@
-import os
-from concurrent.futures import ThreadPoolExecutor, wait
-
 import pytest
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.image import DockerImage
@@ -19,7 +16,7 @@ def base_publisher_url():
     return "http://localhost:8000"
 
 @pytest.fixture(scope="session", autouse=True)
-def images(request):
+def images():
     def create_docker_image(path: str, tag: str) -> DockerImage:
         return DockerImage(path=path, tag=tag).build()
 
@@ -32,6 +29,7 @@ def images(request):
     create_docker_image("./tests/docker-images/dapr", dapr)
     create_docker_image("./tests/docker-images/order-processor", processor)
     create_docker_image("./tests/docker-images/order-publisher", publisher)
+    
 
 
 @pytest.fixture(scope="function") 
@@ -45,13 +43,13 @@ def redis(network):
         yield redis_container
 
 @pytest.fixture(scope="function")
-def processor(network):
+def processor_container(network):
     with (DockerContainer(processor).with_network(network).with_name("processor")) as processor_container:
         yield processor_container
 
 
 @pytest.fixture(scope="function")
-def publisher(network):
+def publisher_container(network):
     with (DockerContainer(publisher).with_network(network).with_name("publisher")) as publisher_container:
         yield publisher_container
 
