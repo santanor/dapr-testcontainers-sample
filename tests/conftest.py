@@ -12,7 +12,7 @@ publisher_base = "publisher:latest"
 processor_base = "processor:latest"
 publisher = "publisher:integration"
 processor = "processor:integration"
-
+dapr = "dapr:integration"
 
 @pytest.fixture
 def base_publisher_url():
@@ -30,7 +30,7 @@ def images(request):
  
     # This uses the base images and extends them to include test-specific dependencies. In this case... just Dapr
     # but it could also include other things such as az cli or test volumes for sample payloads
-    create_docker_image("./tests/docker-images/dapr", publisher_base)
+    create_docker_image("./tests/docker-images/dapr", dapr)
     create_docker_image("./tests/docker-images/order-processor", processor)
     create_docker_image("./tests/docker-images/order-publisher", publisher)
 
@@ -40,8 +40,8 @@ def containers(request, images):
     # unravel and free up resources in order, essentially cleaning up the test environment for a new run.
     with Network() as network:
         with (RedisContainer(image="redis:7.4.2-alpine").with_network(network).with_name("redis").with_bind_ports(6379, 6380)) as redis_container:
-            with (DockerContainer(publisher).with_network(network).with_name(publisher).with_bind_ports(8000,8000)) as publisher_container:
-                with (DockerContainer(processor).with_network(network).with_name(processor)) as processor_container:
+            with (DockerContainer(publisher).with_network(network).with_name("publisher").with_bind_ports(8000,8000)) as publisher_container:
+                with (DockerContainer(processor).with_network(network).with_name("processor")) as processor_container:
                     yield {
                         "redis": redis_container,
                         "publisher": publisher_container,

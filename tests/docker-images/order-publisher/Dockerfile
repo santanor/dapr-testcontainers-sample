@@ -1,7 +1,7 @@
 # First stage: Build dependencies using Alpine
 FROM dapr:integration AS builder
 
-FROM publisher:integration
+FROM publisher:latest
 
 USER root
 
