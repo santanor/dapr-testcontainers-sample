@@ -1,6 +1,7 @@
 import pytest
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.image import DockerImage
+from testcontainers.core.waiting_utils import wait_for_logs
 from testcontainers.core.network import Network
 from testcontainers.redis import RedisContainer
 
@@ -13,10 +14,11 @@ dapr = "dapr:integration"
 
 @pytest.fixture
 def base_publisher_url():
-    return "http://localhost:8000"
+    return "http://localhost:8001"
 
 @pytest.fixture(scope="session", autouse=True)
 def images():
+    # This is just a helper function to simplify the code
     def create_docker_image(path: str, tag: str) -> DockerImage:
         return DockerImage(path=path, tag=tag).build()
 
@@ -44,13 +46,22 @@ def redis(network):
 
 @pytest.fixture(scope="function")
 def processor_container(network):
-    with (DockerContainer(processor).with_network(network).with_name("processor")) as processor_container:
+    with (DockerContainer(processor)
+          .with_network(network)
+          .with_name("processor")
+          .with_bind_ports(50000, 50000)) as processor_container:
+        wait_for_logs(processor_container, "")
         yield processor_container
 
 
 @pytest.fixture(scope="function")
 def publisher_container(network):
-    with (DockerContainer(publisher).with_network(network).with_name("publisher")) as publisher_container:
+    with (DockerContainer(publisher)
+          .with_network(network)
+          .with_name("publisher")
+          .with_bind_ports(8000, 8001)
+          ) as publisher_container:
+        wait_for_logs(publisher_container, "")
         yield publisher_container
 
 

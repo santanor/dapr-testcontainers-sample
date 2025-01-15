@@ -8,6 +8,9 @@ app = FastAPI()
 @app.post("/order")
 async def publish_order(request: Request):
     order_data = await request.json()
+
+    # Starting the client here uses the default values and the ones in the environment to 
+    # create the client, Therefore there's no extra config here.
     with DaprClient() as client:
         client.publish_event(
             pubsub_name='orders-pubsub',
