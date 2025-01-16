@@ -14,7 +14,7 @@ dapr = "dapr:integration"
 
 @pytest.fixture
 def base_publisher_url():
-    return "http://localhost:8001"
+    return "http://localhost:8000"
 
 @pytest.fixture(scope="session", autouse=True)
 def images():
@@ -41,7 +41,7 @@ def network():
 
 @pytest.fixture(scope="function")
 def redis(network):
-    with (RedisContainer(image="redis:7.4.2-alpine").with_network(network).with_name("redis").with_bind_ports(6379, 6380)) as redis_container:
+    with (RedisContainer(image="redis:7.4.2-alpine").with_network(network).with_name("redis-integration").with_bind_ports(6379, 6380)) as redis_container:
         yield redis_container
 
 @pytest.fixture(scope="function")
@@ -49,8 +49,11 @@ def processor_container(network):
     with (DockerContainer(processor)
           .with_network(network)
           .with_name("processor")
-          .with_bind_ports(50000, 50000)) as processor_container:
-        wait_for_logs(processor_container, "")
+          .with_bind_ports(50051, 50051)) as processor_container:
+        
+        # Wait for the application to start. There are many ways to do this, but checking the logs seems simple enough to me
+        wait_for_logs(processor_container, "You're up and running! Both Dapr and your app logs will appear here.")
+
         yield processor_container
 
 
@@ -59,9 +62,12 @@ def publisher_container(network):
     with (DockerContainer(publisher)
           .with_network(network)
           .with_name("publisher")
-          .with_bind_ports(8000, 8001)
+          .with_bind_ports(8000, 8000)
           ) as publisher_container:
-        wait_for_logs(publisher_container, "")
+        
+        # Wait for the application to start. There are many ways to do this, but checking the logs seems simple enough to me
+        wait_for_logs(publisher_container, "You're up and running! Both Dapr and your app logs will appear here.")
+
         yield publisher_container
 
 

@@ -14,6 +14,5 @@ def check_health():
     return True
 
 
-if __name__ == '__main__':
-    app.register_health_check(check_health)
-    app.run(50051)
+app.register_health_check(check_health)
+app.run(50051)

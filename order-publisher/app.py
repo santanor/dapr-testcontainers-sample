@@ -24,7 +24,3 @@ async def publish_order(request: Request):
 def check_health():
     """Dapr calls this function to check if the service is ready"""
     return {"status": "healthy"}
-
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
