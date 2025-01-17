@@ -1,18 +1,28 @@
+from flask import Flask, request, jsonify
+from cloudevents.http import from_http
 import json
-from dapr.clients import DaprClient
-from dapr.ext.grpc import App, BindingRequest
+import os
 
-app = App()
+app = Flask(__name__)
 
-@app.subscribe(pubsub_name='orders-pubsub', topic='orders')
-def orders_subscriber(event: BindingRequest):
-    data = json.loads(event.Data())
-    print(f"Received order: {data}")
+# Register Dapr pub/sub subscriptions
+@app.route('/dapr/subscribe', methods=['GET'])
+def subscribe():
+    subscriptions = [{
+        'pubsubname': 'orders-pubsub',
+        'topic': 'orders',
+        'route': 'orders'
+    }]
+    print('Dapr pub/sub is subscribed to: ' + json.dumps(subscriptions))
+    return jsonify(subscriptions)
 
-def check_health():
-    """Dapr calls this function to check if the service is ready"""
-    return True
+
+# Dapr subscription in /dapr/subscribe sets up this route
+@app.route('/orders', methods=['POST'])
+def orders_subscriber():
+    event = from_http(request.headers, request.get_data())
+    print('Received order: ' + event.data)
+    return 'OK', 200
 
 
-app.register_health_check(check_health)
-app.run(50051)
+app.run(port=8001)

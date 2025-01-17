@@ -23,9 +23,11 @@ COPY --from=builder /components /components
 
 USER nonroot
 
+EXPOSE 50051
+
 ENTRYPOINT ["dapr"]
 CMD ["run", "--app-id", "order-processor", "--app-port", "50051", "--dapr-http-port", "3501", \
    "--resources-path", "/components", "--dapr-grpc-port", "50002", "--app-protocol", "grpc", \
    "--app-health-probe-interval", "1", "--app-health-probe-timeout", "1000", "--app-health-threshold", "10",\
-   "--enable-app-health-check=true", "--placement-host-address", "dapr-placement:50005",\
-   "--scheduler-host-address", "dapr-scheduler:50006", "/run.sh" ]
+   "--placement-host-address", "dapr-placement:50005", "--scheduler-host-address", "", \
+   "--enable-app-health-check=true", "/run.sh" ]

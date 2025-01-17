@@ -49,6 +49,8 @@ def processor_container(network):
     with (DockerContainer(processor)
           .with_network(network)
           .with_name("processor")
+          .with_env("DAPR_HTTP_ENDPOINT", "http://localhost:3501/")
+          .with_env("DAPR_GRPC_ENDPOINT", "localhost:50002")
           .with_bind_ports(50051, 50051)) as processor_container:
         
         # Wait for the application to start. There are many ways to do this, but checking the logs seems simple enough to me
