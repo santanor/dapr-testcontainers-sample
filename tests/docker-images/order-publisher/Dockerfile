@@ -27,6 +27,4 @@ USER nonroot
 ENTRYPOINT ["dapr"]
 CMD ["run", "--app-id", "order-publisher", "--app-port", "8000", "--dapr-http-port", "3500", \
    "--resources-path", "/components", "--dapr-grpc-port", "50001",  \
-   "--app-health-probe-interval", "1", "--app-health-probe-timeout", "1000", "--app-health-threshold", "10",\
-   "--enable-app-health-check=true", "--placement-host-address", "dapr-placement:50005",\
-   "--scheduler-host-address", "dapr-scheduler:50006", "/run.sh" ]
+   "--scheduler-host-address", "", "/run.sh" ]

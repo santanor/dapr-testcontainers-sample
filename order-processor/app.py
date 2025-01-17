@@ -21,7 +21,7 @@ def subscribe():
 @app.route('/orders', methods=['POST'])
 def orders_subscriber():
     event = from_http(request.headers, request.get_data())
-    print('Received order: ' + event.data)
+    print('Received order: ' + event.data, flush=True)
     return 'OK', 200
 
 

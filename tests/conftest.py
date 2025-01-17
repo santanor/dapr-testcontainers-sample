@@ -51,7 +51,7 @@ def processor_container(network):
           .with_name("processor")
           .with_env("DAPR_HTTP_ENDPOINT", "http://localhost:3501/")
           .with_env("DAPR_GRPC_ENDPOINT", "localhost:50002")
-          .with_bind_ports(50051, 50051)) as processor_container:
+          .with_bind_ports(8001, 8001)) as processor_container:
         
         # Wait for the application to start. There are many ways to do this, but checking the logs seems simple enough to me
         wait_for_logs(processor_container, "You're up and running! Both Dapr and your app logs will appear here.")

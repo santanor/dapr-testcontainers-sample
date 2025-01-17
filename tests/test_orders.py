@@ -26,7 +26,7 @@ def test_order_publisher_processor(base_publisher_url, redis, publisher_containe
     assert response.status_code == 200
 
     # For this sample we'll just wait for the log to indicate that the processor has received the message
-    wait_for_logs(processor_container, "Received order: {'order_id': '1', 'item': 'item1'}")
+    wait_for_logs(processor_container, "Received order: {\"order_id\": \"1\", \"item\": \"item1\"}")
 
     # If the log is found, the test passes
     assert True
