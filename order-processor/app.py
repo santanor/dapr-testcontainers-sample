@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify
 from cloudevents.http import from_http
 import json
-import os
 
 app = Flask(__name__)
 
@@ -21,6 +20,8 @@ def subscribe():
 @app.route('/orders', methods=['POST'])
 def orders_subscriber():
     event = from_http(request.headers, request.get_data())
+
+    # More complicated processing would go here in a real application
     print('Received order: ' + event.data, flush=True)
     return 'OK', 200
 

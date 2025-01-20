@@ -1,6 +1,5 @@
 from fastapi import FastAPI, Request
 import json
-import uvicorn
 from dapr.clients import DaprClient
 
 app = FastAPI()

@@ -10,8 +10,7 @@ spec:
   # Variables documented here https://docs.dapr.io/reference/components-reference/supported-pubsub/setup-redis-pubsub/
   metadata:
     - name: redisHost
-      # The host needs to include the namespace of the redis component
-      # value: redis-master.{NAMESPACE}.svc.cluster.local:6379
+      # This needs to match the container name given in conftest.py.
       value: redis-integration:6379
     - name: processingTimeout
       # The amount time that a message must be pending before attempting to redeliver

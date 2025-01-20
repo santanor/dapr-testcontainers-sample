@@ -19,8 +19,8 @@ def base_publisher_url():
 @pytest.fixture(scope="session", autouse=True)
 def images():
     # This is just a helper function to simplify the code
-    def create_docker_image(path: str, tag: str) -> DockerImage:
-        return DockerImage(path=path, tag=tag).build()
+    def create_docker_image(path: str, tag: str, buildargs: dict) -> DockerImage:
+        return DockerImage(path=path, tag=tag, buildargs=buildargs).build()
 
     # Build the base images as they'd be deployed in production
     create_docker_image("./order-processor", processor_base)
@@ -29,9 +29,8 @@ def images():
     # This uses the base images and extends them to include test-specific dependencies. In this case... just Dapr
     # but it could also include other things such as az cli or test volumes for sample payloads
     create_docker_image("./tests/docker-images/dapr", dapr)
-    create_docker_image("./tests/docker-images/order-processor", processor)
-    create_docker_image("./tests/docker-images/order-publisher", publisher)
-    
+    create_docker_image("./tests/docker-images/orders", processor, {"image": processor_base, "port": 8001, "app_id": "order-processor", "dapr_http_port": 3501, "dapr_grpc_port": 50002})
+    create_docker_image("./tests/docker-images/orders", publisher, {"image": publisher_base, "port": 8000, "app_id": "order-publisher", "dapr_http_port": 3500, "dapr_grpc_port": 50001})
 
 
 @pytest.fixture(scope="function") 
