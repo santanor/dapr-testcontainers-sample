@@ -1,0 +1,2 @@
+#!/bin/sh
+dapr run --app-id $app_id --app-port $port --dapr-http-port $dapr_http_port  --resources-path "/components" --dapr-grpc-port $dapr_grpc_port --scheduler-host-address "" -- uvicorn app:app --host 0.0.0.0 --port $port

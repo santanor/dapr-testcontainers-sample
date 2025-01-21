@@ -19,8 +19,8 @@ def base_publisher_url():
 @pytest.fixture(scope="session", autouse=True)
 def images():
     # This is just a helper function to simplify the code
-    def create_docker_image(path: str, tag: str, buildargs: dict) -> DockerImage:
-        return DockerImage(path=path, tag=tag, buildargs=buildargs).build()
+    def create_docker_image(path: str, tag: str, buildargs: dict = None) -> DockerImage:
+        return DockerImage(path=path, tag=tag).build(buildargs=buildargs)
 
     # Build the base images as they'd be deployed in production
     create_docker_image("./order-processor", processor_base)
@@ -29,8 +29,8 @@ def images():
     # This uses the base images and extends them to include test-specific dependencies. In this case... just Dapr
     # but it could also include other things such as az cli or test volumes for sample payloads
     create_docker_image("./tests/docker-images/dapr", dapr)
-    create_docker_image("./tests/docker-images/orders", processor, {"image": processor_base, "port": 8001, "app_id": "order-processor", "dapr_http_port": 3501, "dapr_grpc_port": 50002})
-    create_docker_image("./tests/docker-images/orders", publisher, {"image": publisher_base, "port": 8000, "app_id": "order-publisher", "dapr_http_port": 3500, "dapr_grpc_port": 50001})
+    create_docker_image("./tests/docker-images/orders", processor, buildargs={"image": processor_base})
+    create_docker_image("./tests/docker-images/orders", publisher, buildargs={"image": publisher_base})
 
 
 @pytest.fixture(scope="function") 
@@ -46,11 +46,14 @@ def redis(network):
 @pytest.fixture(scope="function")
 def processor_container(network):
     with (DockerContainer(processor)
-          .with_network(network)
-          .with_name("processor")
-          .with_env("DAPR_HTTP_ENDPOINT", "http://localhost:3501/")
-          .with_env("DAPR_GRPC_ENDPOINT", "localhost:50002")
-          .with_bind_ports(8001, 8001)) as processor_container:
+        .with_network(network)
+        .with_name("processor")
+        .with_bind_ports(8001, 8001)
+        .with_env("app_id", "order-processor")
+        .with_env("port", "8001")
+        .with_env("dapr_http_port", "3501")
+        .with_env("dapr_grpc_port", "50002")
+        ) as processor_container:
         
         # Wait for the application to start. There are many ways to do this, but checking the logs seems simple enough to me
         wait_for_logs(processor_container, "You're up and running! Both Dapr and your app logs will appear here.")
@@ -61,10 +64,14 @@ def processor_container(network):
 @pytest.fixture(scope="function")
 def publisher_container(network):
     with (DockerContainer(publisher)
-          .with_network(network)
-          .with_name("publisher")
-          .with_bind_ports(8000, 8000)
-          ) as publisher_container:
+        .with_network(network)
+        .with_name("publisher")
+        .with_bind_ports(8000, 8000)
+        .with_env("app_id", "order-publisher")
+        .with_env("port", "8000")
+        .with_env("dapr_http_port", "3500")
+        .with_env("dapr_grpc_port", "50001")
+        ) as publisher_container:
         
         # Wait for the application to start. There are many ways to do this, but checking the logs seems simple enough to me
         wait_for_logs(publisher_container, "You're up and running! Both Dapr and your app logs will appear here.")
