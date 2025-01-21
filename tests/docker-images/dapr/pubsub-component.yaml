@@ -11,6 +11,8 @@ spec:
   metadata:
     - name: redisHost
       # This needs to match the container name given in conftest.py.
+      # You might want to consider parametrising this value so that this file doesn't need to be dupplicated.
+      # If that was the case, the Dockerfile would copy the one from `dapr-components`, instead of this one
       value: redis-integration:6379
     - name: processingTimeout
       # The amount time that a message must be pending before attempting to redeliver
